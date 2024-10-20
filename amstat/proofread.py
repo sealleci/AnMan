@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup, Tag
 from concurrent.futures import ThreadPoolExecutor
 from typing import cast
 
-chara_list = []  # 确保这里有200个汉字
+chara_list: list[str] = []  # 确保这里有200个汉字
 result_dict: dict[str, str] = {}
 
 with open("./output/chara_raw.txt", "r", encoding="utf-8") as file:
@@ -14,6 +14,12 @@ with open("./output/chara_raw.txt", "r", encoding="utf-8") as file:
 
         if cur_line != '':
             chara_list.append(cur_line)
+
+
+def write_result(chara: str, status: str, file_name: str = "proofread.txt"):
+    with open(f"./output/{file_name}", "a", encoding="utf-8") as file:
+        if status != "[correct]":
+            file.write(f"{chara}: {status}\n")
 
 
 def query_chara(chara: str) -> tuple[str, str]:
@@ -45,7 +51,27 @@ def query_chara(chara: str) -> tuple[str, str]:
                 li_elm = cast(Tag, li_elm)
                 real_chara = li_elm.get_text().strip()
 
-                if real_chara == chara:
+                is_has_zhu = False
+                note_elm_list = body_elm.find_all(
+                    "div", {"class": "col-md-12 notes"})
+
+                for note_elm in note_elm_list:
+                    note_elm = cast(Tag, note_elm)
+                    h3_elm = note_elm.find("h3")
+
+                    if h3_elm is None:
+                        continue
+
+                    h3_elm = cast(Tag, h3_elm)
+                    note_title = h3_elm.get_text().strip()
+
+                    if note_title.find("說文解字注") >= 0:
+                        is_has_zhu = True
+                        break
+
+                if not is_has_zhu:
+                    chara_status = "[unorthodox]"
+                elif real_chara == chara:
                     chara_status = "[correct]"
                 else:
                     chara_status = real_chara
@@ -109,34 +135,25 @@ def query_chara(chara: str) -> tuple[str, str]:
                                 multi_chara += real_chara
 
                     chara_status = multi_chara
-
             break
 
+        write_result(chara, chara_status)
         return (chara, chara_status)
     else:
         print(f"request failed: {chara}")
         return (chara, "[fail]")
 
 
-# chara_list = ["蝰", "賣", "欠"]
+# chara_list = ["蝰", "賣", "欠", "透"]
 
 results = []
 start_index = 1582
 
-# with ThreadPoolExecutor(max_workers=50) as executor:
-#     results = list(executor.map(query_chara, chara_list))
+# for chara in chara_list[start_index:]:
+#     res = query_chara(chara)
+#     if res[1] != "[correct]":
+#         with open("./output/proofread.txt", "a", encoding="utf-8") as file:
+#             file.write(f"{res[0]}: {res[1]}\n")
 
-for chara in chara_list[start_index:]:
-    res = query_chara(chara)
-
-    if res[1] != "[correct]":
-        with open("./output/proofread.txt", "a", encoding="utf-8") as file:
-            file.write(f"{res[0]}: {res[1]}\n")
-
-# for key, value in results:
-#     if value != "[correct]":
-#         result_dict[key] = value
-
-# with open("./output/proofread.txt", "w", encoding="utf-8") as file:
-#     for key, value in result_dict.items():
-#         file.write(f"{key}: {value}\n")
+with ThreadPoolExecutor(max_workers=20) as executor:
+    results = list(executor.map(query_chara, chara_list))
