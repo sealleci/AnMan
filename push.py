@@ -26,6 +26,16 @@ def parse_args() -> PushArgs:
 
 
 def main(commit_message: str):
+    print("> Restoring text files related to names")
+    file_path_list: list[str] = [
+        "./amstat/input/chara.txt",
+        "./amstat/output/chara.txt",
+        "./amstat/output/chara_raw.txt",
+    ]
+
+    for file_path in file_path_list:
+        run_git_command(["git", "restore", file_path])
+
     print("> Pulling the latest changes from remote")
     run_git_command(["git", "pull"])
 

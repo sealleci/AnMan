@@ -7,11 +7,11 @@ from openpyxl import load_workbook
 
 def select_latest_xlsx_file(directory: str) -> str | None:
     TIANGAN_ORDER: list[str] = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
-    pattern: str = r"^滿徽源集_版([甲乙丙丁戊己庚辛壬癸]{1})\.xlsx$"
+    filename_schema: str = r"^滿徽源集_版(.+)\.xlsx$"
     candidate_files: list[tuple[str, str]] = []
 
     for filename in listdir(directory):
-        match_result = match(pattern, filename)
+        match_result = match(filename_schema, filename)
 
         if match_result:
             cur_tiangan = match_result.group(1)
