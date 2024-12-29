@@ -26,16 +26,16 @@ def parse_args() -> PushArgs:
 
 
 def main(commit_message: str):
-    print("Pulling the latest changes from remote")
+    print("> Pulling the latest changes from remote")
     run_git_command(["git", "pull"])
 
-    print("Adding changes")
+    print("> Adding changes")
     run_git_command(["git", "add", "."])
 
-    print(f"Committing changes with message: {commit_message}")
+    print(f"> Committing changes with message: {commit_message}")
     run_git_command(["git", "commit", "-m", commit_message])
 
-    print("Pushing changes...")
+    print("> Pushing changes")
     run_git_command(["git", "push"])
 
 
