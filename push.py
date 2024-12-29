@@ -1,7 +1,7 @@
-import argparse
-import subprocess
-import sys
+from argparse import ArgumentParser
 from dataclasses import dataclass
+from subprocess import run
+from sys import exit as exit_sys
 
 
 @dataclass
@@ -11,15 +11,15 @@ class PushArgs:
 
 def run_git_command(command_parts: list[str]):
     try:
-        result = subprocess.run(command_parts, check=True, text=True, capture_output=True)
+        result = run(command_parts, check=True, text=True, capture_output=True)
         print(result.stdout)
     except Exception as e:
         print(f"Error occurred while running {' '.join(command_parts)}: {e}")
-        sys.exit(1)
+        exit_sys(1)
 
 
 def parse_args() -> PushArgs:
-    parser = argparse.ArgumentParser(description="Git automation script")
+    parser = ArgumentParser(description="Git automation script")
     parser.add_argument("-m", "--message", required=True, help="Commit message")
 
     return PushArgs(**vars(parser.parse_args()))
