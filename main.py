@@ -1,6 +1,6 @@
 from os import chdir, listdir
 from re import match
-from subprocess import run
+from subprocess import CalledProcessError, run
 
 from openpyxl import load_workbook
 
@@ -66,8 +66,8 @@ def run_script(directory: str, script_filename: str):
     try:
         run(["python", script_filename], check=True, capture_output=True, text=True)
         print(f"Executed {directory}/{script_filename} successfully")
-    except Exception as e:
-        print(f"Error occurred while executing {script_filename}: {e}")
+    except CalledProcessError as e:
+        print(f"Error occurred while executing {script_filename}: {e.stderr}")
 
     chdir("..")
 

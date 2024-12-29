@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from subprocess import run
+from subprocess import CalledProcessError, run
 from sys import exit as exit_sys
 
 
@@ -12,9 +12,11 @@ class PushArgs:
 def run_git_command(command_parts: list[str]):
     try:
         result = run(command_parts, check=True, text=True, capture_output=True)
-        print(result.stdout)
-    except Exception as e:
-        print(f"Error occurred while running {' '.join(command_parts)}: {e}")
+
+        if result.stdout != "":
+            print(result.stdout)
+    except CalledProcessError as e:
+        print(f"Error occurred while running {' '.join(command_parts)}: {e.stderr}")
         exit_sys(1)
 
 
