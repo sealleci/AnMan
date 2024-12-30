@@ -113,9 +113,6 @@ def main(commit_message: str):
     print("> Running statistic script")
     run_statistic()
 
-    print("> Pulling the latest changes from remote")
-    run_git_command(["git", "pull"])
-
     print("> Adding changes")
     run_git_command(["git", "add", "."])
 
