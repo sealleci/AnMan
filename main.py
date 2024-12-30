@@ -1,8 +1,16 @@
+from argparse import ArgumentParser
+from dataclasses import dataclass
 from os import chdir, listdir
 from re import match
 from subprocess import CalledProcessError, run
+from sys import exit as exit_sys
 
 from openpyxl import load_workbook
+
+
+@dataclass
+class PushArgs:
+    message: str
 
 
 def select_latest_xlsx_file(directory: str) -> str | None:
@@ -72,7 +80,7 @@ def run_script(directory: str, script_filename: str):
     chdir("..")
 
 
-def main():
+def run_statistic():
     xlsx_file = select_latest_xlsx_file("./docs")
 
     if not xlsx_file:
@@ -83,5 +91,50 @@ def main():
     run_script("./amstat", "count_chara.py")
 
 
+def run_git_command(command_parts: list[str]):
+    try:
+        result = run(command_parts, check=True, text=True, capture_output=True)
+
+        if result.stdout != "":
+            print(result.stdout)
+    except CalledProcessError as e:
+        print(f"Error occurred while running {' '.join(command_parts)}: {e.stderr}")
+        exit_sys(1)
+
+
+def parse_args() -> PushArgs:
+    parser = ArgumentParser(description="Git automation script")
+    parser.add_argument("-m", "--message", required=True, help="Commit message")
+
+    return PushArgs(**vars(parser.parse_args()))
+
+
+def main(commit_message: str):
+    print("> Running statistic script")
+    run_statistic()
+
+    print("> Restoring text files related to names")
+    file_path_list: list[str] = [
+        "./amstat/input/chara.txt",
+        "./amstat/output/chara.txt",
+        "./amstat/output/chara_raw.txt",
+    ]
+
+    for file_path in file_path_list:
+        run_git_command(["git", "restore", file_path])
+
+    print("> Pulling the latest changes from remote")
+    run_git_command(["git", "pull"])
+
+    print("> Adding changes")
+    run_git_command(["git", "add", "."])
+
+    print(f"> Committing changes with message: {commit_message}")
+    run_git_command(["git", "commit", "-m", commit_message])
+
+    print("> Pushing changes")
+    run_git_command(["git", "push"])
+
+
 if __name__ == "__main__":
-    main()
+    main(parse_args().message)
