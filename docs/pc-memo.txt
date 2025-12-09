@@ -1,0 +1,2 @@
+https://ictv.global/about/code
+病毒本质上是一类「移动性遗传元件」(mobile genetic elements, MGEs)，与——转座子(transposons)、反转录转座子(retrotransposons)、质粒(plasmids)、卫星(satellites)、类病毒(viroids)、拟病毒(virusoids)、整合子(integrons)、内含子生成元件(introners)、基因转移介质物(gene transfer agents, GTAs)/组病毒(viriform)等属于同一类
