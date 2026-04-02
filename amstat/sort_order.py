@@ -2,7 +2,7 @@ from re import match, search
 
 sorted_order = ""
 sub_index_pattern = r"'?\d+-(\w)"
-special_sub_index = ["00", "e", "-1"]
+special_sub_index = ["00", "e", "pi", "-1"]
 
 with open("./input/sort.txt", "r", encoding="utf-8") as f:
     """
