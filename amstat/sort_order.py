@@ -1,30 +1,26 @@
-from re import match, search
+from re import search
 
 sorted_order = ""
 sub_index_pattern = r"'?\d+-(\w)"
-special_sub_index = ["00", "e", "pi", "-1"]
+special_sub_index = ["e", "pi", "-1", "00"]
 
 with open("./input/sort.txt", "r", encoding="utf-8") as f:
     """
     1.
-
-    192
-    193
+    - 192
+    - 193
 
     2.
-
-    192-a
-    192-b
+    - 192-a
+    - 192-b
 
     3.
-
-    192-c
-    193-a
+    - 192-c
+    - 193-a
 
     4.
-
-    192-c
-    193
+    - 192-c
+    - 193
     """
 
     cur_line_index: int = 1

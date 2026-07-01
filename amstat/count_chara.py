@@ -1,4 +1,7 @@
-from typing import Dict
+from typing import Dict, List
+
+SPECIAL_CHARA_LIST: List[str] = ["臂", "厷"]
+REDUPLICATED_COUNT = 30
 
 chara_dict: Dict[str, int] = {}
 
@@ -13,6 +16,10 @@ with open("./input/chara.txt", "r", encoding="utf-8") as file:
             else:
                 chara_dict[name_item[i]] += 1
             i += 1
+
+for special_chara in SPECIAL_CHARA_LIST:
+    if special_chara in chara_dict and chara_dict[special_chara] > REDUPLICATED_COUNT:
+        chara_dict[special_chara] -= REDUPLICATED_COUNT
 
 sorted_list = list(map(lambda x: (x, chara_dict[x]), chara_dict))
 sorted_list.sort(key=lambda x: x[1], reverse=True)
